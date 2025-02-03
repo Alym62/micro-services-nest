@@ -1,8 +1,12 @@
+import { RabbitMQService } from '@app/common';
 import { NestFactory } from '@nestjs/core';
 import { BillingModule } from './billing.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(BillingModule);
-  await app.listen(process.env.port ?? 3000);
+  const rmqService = app.get<RabbitMQService>(RabbitMQService);
+  app.connectMicroservice(rmqService.getOptions('BILLING'));
+
+  await app.startAllMicroservices();
 }
 bootstrap();
